@@ -7,13 +7,22 @@ import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
+import SelectBox from '@/Components/SelectBox.vue';
+import { ref, onMounted } from 'vue';
 
 const form = useForm({
     name: '',
     email: '',
     password: '',
     password_confirmation: '',
-    terms: false,
+    package_id: '',
+});
+
+const packages = ref([]);
+
+onMounted(async () => {
+    const response = await axios.get('/api/packages');
+    packages.value = response.data;
 });
 
 const submit = () => {
@@ -44,6 +53,29 @@ const submit = () => {
                     autocomplete="name"
                 />
                 <InputError class="mt-2" :message="form.errors.name" />
+            </div>
+
+            <div class="mt-4">
+                <InputLabel for="referral" value="Referral Code" />
+                <TextInput
+                    id="password"
+                    v-model="form.referral"
+                    type="text"
+                    class="mt-1 block w-full"
+                    required
+                />
+                <InputError class="mt-2" :message="form.errors.referral" />
+            </div>
+
+             <!-- Package Selection -->
+            <div class="mt-4">
+                <InputLabel for="package_id" value="Select Package" />
+                <SelectBox 
+                    v-model="form.package_id" 
+                    class="mt-1 block w-full"
+                    :options="packages" 
+                    autofocus
+                />
             </div>
 
             <div class="mt-4">
